@@ -8,7 +8,7 @@ on:
 
 jobs:
   preparation:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -22,7 +22,7 @@ jobs:
           ./scripts/prepareRun.sh
 
   jobA:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: preparation
     steps:
       - name: Checkout code
@@ -35,7 +35,7 @@ jobs:
           ./scripts/runJob.sh JobA
 
   jobB:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: preparation
     steps:
       - name: Checkout code
@@ -47,7 +47,7 @@ jobs:
           ./scripts/runJob.sh JobB
 
   jobC:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: preparation
     steps:
       - name: Checkout code
@@ -59,7 +59,7 @@ jobs:
           ./scripts/runJob.sh JobC
 
   integration:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [jobA, jobB, jobC]
     steps:
       - name: Checkout code
@@ -72,7 +72,7 @@ jobs:
           ./scripts/integrateJobs.sh JobA JobB JobC
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: integration
     steps:
       - name: Checkout code
