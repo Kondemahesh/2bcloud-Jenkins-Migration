@@ -12,9 +12,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Set permission
-        run: chmod +x ./scripts/*.sh
 
+      - name: Set execute permission for scripts
+        run: chmod +x ./scripts/*.sh
+      
       - name: Preparation
         run: |
           echo "Running preparation step..."
