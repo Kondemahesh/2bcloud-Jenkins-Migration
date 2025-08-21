@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set execute permission for scripts
+      - name: Ensure scripts executable
         run: chmod +x ./scripts/*.sh
       
       - name: Preparation
@@ -21,7 +21,7 @@ jobs:
           echo "Running preparation step..."
           # Equivalent to pipelineUtils.prepareRun()
           chmod +x ./scripts/prepareRun.sh
-           sudo ./scripts/prepareRun.sh
+             ./scripts/prepareRun.sh
 
   jobA:
     runs-on: self-hosted
