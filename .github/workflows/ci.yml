@@ -32,7 +32,7 @@ jobs:
         run: |
           echo "Running JobA..."
           # Equivalent to pipelineUtils.runJob('JobA')
-          ./scripts/runJob.sh JobA
+          ./scripts/pipeline_utils.sh JobA
 
   jobB:
     runs-on: self-hosted
