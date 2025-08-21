@@ -1,0 +1,83 @@
+name: CI-CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  preparation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Preparation
+        run: |
+          echo "Running preparation step..."
+          # Equivalent to pipelineUtils.prepareRun()
+          ./scripts/prepareRun.sh
+
+  jobA:
+    runs-on: ubuntu-latest
+    needs: preparation
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run JobA
+        run: |
+          echo "Running JobA..."
+          # Equivalent to pipelineUtils.runJob('JobA')
+          ./scripts/runJob.sh JobA
+
+  jobB:
+    runs-on: ubuntu-latest
+    needs: preparation
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run JobB
+        run: |
+          echo "Running JobB..."
+          ./scripts/runJob.sh JobB
+
+  jobC:
+    runs-on: ubuntu-latest
+    needs: preparation
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run JobC
+        run: |
+          echo "Running JobC..."
+          ./scripts/runJob.sh JobC
+
+  integration:
+    runs-on: ubuntu-latest
+    needs: [jobA, jobB, jobC]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Integration
+        run: |
+          echo "Integrating results of JobA, JobB, JobC..."
+          # Equivalent to pipelineUtils.integrateJobs(['JobA','JobB','JobC'])
+          ./scripts/integrateJobs.sh JobA JobB JobC
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: integration
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy
+        run: |
+          echo "Deploying application..."
+          # Equivalent to pipelineUtils.deploy()
+          ./scripts/deploy.sh
