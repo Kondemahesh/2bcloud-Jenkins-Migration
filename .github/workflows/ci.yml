@@ -21,7 +21,7 @@ jobs:
           echo "Running preparation step..."
           # Equivalent to pipelineUtils.prepareRun()
           chmod +x ./scripts/prepareRun.sh
-          ./scripts/prepareRun.sh
+           sudo ./scripts/prepareRun.sh
 
   jobA:
     runs-on: self-hosted
