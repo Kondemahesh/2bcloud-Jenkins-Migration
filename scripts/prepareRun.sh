@@ -1,36 +1,42 @@
-def call() {
-    echo "pipelineUtils library loaded"
+#!/bin/bash
+set -e
+
+# Global file names
+PREP_FILE="prep.txt"
+COMBINED_FILE="combined.txt"
+
+# Prepare step
+prepareRun() {
+    RUN_ID=$(uuidgen)
+    echo "Preparation stage: RunID=${RUN_ID}"
+    echo "Build Number: ${BUILD_NUMBER:-local}"
+    echo "RunID=${RUN_ID}" > "$PREP_FILE"
 }
 
-def prepareRun() {
-    def runId = UUID.randomUUID().toString()
-    echo "Preparation stage: RunID=${runId}"
-    echo "Build Number: ${env.BUILD_NUMBER}"
-    writeFile file: "prep.txt", text: "RunID=${runId}\n"
-    stash includes: "prep.txt", name: "prepData"
-    return runId
-}
-
-def runJob(String jobName) {
-    unstash "prepData"
-    sh """
-      echo "${jobName} running with \$(cat prep.txt)" > ${jobName}.log
-    """
-    stash includes: "${jobName}.log", name: "${jobName}Data"
+# Run a job with job name argument
+runJob() {
+    local jobName=$1
+    if [ ! -f "$PREP_FILE" ]; then
+        echo "Error: $PREP_FILE not found. Run prepareRun first."
+        exit 1
+    fi
+    echo "${jobName} running with $(cat $PREP_FILE)" > "${jobName}.log"
     echo "${jobName} complete"
 }
 
-
-
-def integrateJobs(List jobNames) {
-    jobNames.each { unstash "${it}Data" }
-    sh "cat ${jobNames.collect { it + '.log' }.join(' ')} > combined.txt"
-    stash includes: "combined.txt", name: "integrationData"
-    echo "Integration complete"
+# Integrate multiple job logs
+integrateJobs() {
+    local jobNames=("$@")
+    cat "${jobNames[@]/%/.log}" > "$COMBINED_FILE"
+    echo "Integration complete: $COMBINED_FILE created"
 }
 
-def deploy() {
-    unstash "integrationData"
+# Deploy step
+deploy() {
+    if [ ! -f "$COMBINED_FILE" ]; then
+        echo "Error: $COMBINED_FILE not found. Run integrateJobs first."
+        exit 1
+    fi
     echo "Deploy step using combined results:"
-    sh "cat combined.txt"
+    cat "$COMBINED_FILE"
 }
